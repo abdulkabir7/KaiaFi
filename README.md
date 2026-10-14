@@ -77,9 +77,18 @@ Review `.env.example`, copy it to `.env`, and fill in the RPC endpoint, Arc main
 npm run deploy:arc
 ```
 
-The script refuses to run unless `ARC_RPC_URL`, `PRIVATE_KEY`, and `ARC_USDC_ADDRESS` are valid, the selected network is Arc Mainnet (chain ID 5042), the USDC address is the documented Arc address with deployed code, and `decimals()` returns 6. Before submitting a transaction, it prints the deployer, vault target, constructor token address, estimated gas, buffered gas limit, estimated fee, and available native USDC, and stops if the balance cannot cover the estimate. It deploys **only `ArcUsdcVault`** and writes the actual vault address, transaction hash, and block number to the ignored local `deployment.json`. It does not deploy the prototype lending contracts. The deployment has not been run by this repository's maintainer.
+The script refuses to run unless `ARC_RPC_URL`, `PRIVATE_KEY`, and `ARC_USDC_ADDRESS` are valid, the selected network is Arc Mainnet (chain ID 5042), the USDC address is the documented Arc address with deployed code, and `decimals()` returns 6. Before submitting a transaction, it prints the deployer, vault target, constructor token address, estimated gas, buffered gas limit, estimated fee, and available native USDC, and stops if the balance cannot cover the estimate. It deploys **only `ArcUsdcVault`** and writes the actual vault address, transaction hash, and block number to the ignored local `deployment.json`. It does not deploy the prototype lending contracts.
 
-After verifying `deployment.json` on [Arc Explorer](https://explorer.arc.io), set `VITE_ARC_USDC_VAULT_ADDRESS` for the frontend build/deployment. Vercel deployment is managed separately by the project owner. No live frontend URL is currently claimed.
+The Arc USDC custody vault is deployed and verified:
+
+| Setting | Value |
+| --- | --- |
+| Vault | [`0xC60013cD0edfE8452C12Bdf7EdFbf42824DeeA91`](https://explorer.arc.io/address/0xC60013cD0edfE8452C12Bdf7EdFbf42824DeeA91) |
+| Deployment transaction | [`0x4dc0b989ba890c16f4671a43f909dd23238ecbbf539c05c5ba6810459f35f097`](https://explorer.arc.io/tx/0x4dc0b989ba890c16f4671a43f909dd23238ecbbf539c05c5ba6810459f35f097) |
+| Deployer | `0x42562D5Eadb7EFEd4997C580eA60f2D2f7D58018` |
+| Block | `25927877` |
+
+The deploy script verified a successful receipt, runtime code at the vault address, and the configured Arc USDC token address. The ignored local `deployment.json` contains the deployment metadata. For a Vercel frontend build, set `VITE_ARC_USDC_VAULT_ADDRESS` to the vault address above. Vercel deployment is managed separately by the project owner; no live frontend URL is claimed.
 
 ## Security and limitations
 
@@ -92,6 +101,6 @@ After verifying `deployment.json` on [Arc Explorer](https://explorer.arc.io), se
 ## Deployment status
 
 - Arc lending/borrowing market: not deployed.
-- `ArcUsdcVault`: deployment prepared; no address or transaction hash exists until the owner runs the command.
+- `ArcUsdcVault`: deployed on Arc Mainnet at [`0xC60013cD0edfE8452C12Bdf7EdFbf42824DeeA91`](https://explorer.arc.io/address/0xC60013cD0edfE8452C12Bdf7EdFbf42824DeeA91).
 - Frontend: not deployed by this repository change.
 - License: no license is specified in the repository.
