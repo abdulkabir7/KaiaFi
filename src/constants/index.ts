@@ -1,22 +1,12 @@
-export const ARC_MAINNET = {
-  name: 'Arc',
-  chainId: 5042,
-  rpcUrl: 'https://rpc.mainnet.arc.io',
-  explorerUrl: 'https://explorer.arc.io',
-  nativeCurrency: {
-    name: 'USDC',
-    symbol: 'USDC',
-    decimals: 18,
-  },
-  usdc: {
-    address: '0x3600000000000000000000000000000000000000',
-    decimals: 6,
-  },
-} as const;
+import ARC_MAINNET from '../../config/arc-mainnet.json';
+
+export { ARC_MAINNET };
+
+export const ARC_USDC_VAULT_ADDRESS = import.meta.env.VITE_ARC_USDC_VAULT_ADDRESS ?? '';
 
 export const APP_CONFIG = {
   name: 'KaiaFi',
-  description: 'An Arc-focused lending and borrowing MVP that is not yet deployed.',
+  description: 'Arc USDC custody deposits and withdrawals; lending is unavailable.',
   version: '1.0.0',
   network: ARC_MAINNET.name,
   chainId: ARC_MAINNET.chainId,

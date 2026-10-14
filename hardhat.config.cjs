@@ -1,5 +1,8 @@
 require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-waffle");
+require("dotenv").config();
+
+const ARC_MAINNET = require("./config/arc-mainnet.json");
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -14,6 +17,11 @@ module.exports = {
     },
   },
   networks: {
+    arcMainnet: {
+      url: process.env.ARC_RPC_URL || ARC_MAINNET.rpcUrl,
+      chainId: ARC_MAINNET.chainId,
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+    },
     hardhat: {
       chainId: 1337,
       accounts: {

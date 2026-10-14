@@ -39,13 +39,6 @@ contract LendingPool is ReentrancyGuard, Ownable {
         bool isActive;
     }
     
-    struct MarketData {
-        uint256 totalValueLocked;
-        uint256 totalBorrowed;
-        uint256 averageAPY;
-        uint256 utilizationRate;
-    }
-
     // ============ STATE VARIABLES ============
     
     mapping(address => Asset) public assets;
@@ -349,15 +342,4 @@ contract LendingPool is ReentrancyGuard, Ownable {
         return _getMaxBorrowAmount(user, token);
     }
     
-    function getMarketData() external view returns (MarketData memory) {
-        // For simplicity, return mock data
-        // In production, you'd calculate this from actual asset data
-        
-        return MarketData({
-            totalValueLocked: 1000000e18, // 1M tokens
-            totalBorrowed: 500000e18,     // 500k tokens
-            averageAPY: 0.05e18,          // 5% APY
-            utilizationRate: 50            // 50% utilization
-        });
-    }
-} 
+}

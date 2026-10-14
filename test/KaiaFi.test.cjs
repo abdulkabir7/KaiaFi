@@ -114,14 +114,4 @@ describe("KaiaFi Lending Protocol", function () {
       expect(incentive).to.equal(ethers.utils.parseEther("0.05")); // 5%
     });
   });
-
-  describe("Market Data", function () {
-    it("Should return market data", async function () {
-      const marketData = await lendingPool.getMarketData();
-      expect(marketData.totalValueLocked).to.be.gt(0);
-      expect(marketData.totalBorrowed).to.be.gt(0);
-      expect(marketData.averageAPY).to.be.gt(0);
-      expect(marketData.utilizationRate).to.be.gt(0);
-    });
-  });
-}); 
+});
