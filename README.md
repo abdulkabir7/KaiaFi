@@ -77,7 +77,7 @@ Review `.env.example`, copy it to `.env`, and fill in the RPC endpoint, Arc main
 npm run deploy:arc
 ```
 
-The script refuses to run unless `ARC_RPC_URL`, `PRIVATE_KEY`, and `ARC_USDC_ADDRESS` are valid, the selected network is Arc Mainnet (chain ID 5042), the USDC address is the documented Arc address with deployed code, and `decimals()` returns 6. It deploys **only `ArcUsdcVault`** and writes the actual vault address, transaction hash, and block number to the ignored local `deployment.json`. It does not deploy the prototype lending contracts. Review the transaction in your wallet before signing. The deployment has not been run by this repository's maintainer.
+The script refuses to run unless `ARC_RPC_URL`, `PRIVATE_KEY`, and `ARC_USDC_ADDRESS` are valid, the selected network is Arc Mainnet (chain ID 5042), the USDC address is the documented Arc address with deployed code, and `decimals()` returns 6. Before submitting a transaction, it prints the deployer, vault target, constructor token address, estimated gas, buffered gas limit, estimated fee, and available native USDC, and stops if the balance cannot cover the estimate. It deploys **only `ArcUsdcVault`** and writes the actual vault address, transaction hash, and block number to the ignored local `deployment.json`. It does not deploy the prototype lending contracts. The deployment has not been run by this repository's maintainer.
 
 After verifying `deployment.json` on [Arc Explorer](https://explorer.arc.io), set `VITE_ARC_USDC_VAULT_ADDRESS` for the frontend build/deployment. Vercel deployment is managed separately by the project owner. No live frontend URL is currently claimed.
 

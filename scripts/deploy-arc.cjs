@@ -42,10 +42,57 @@ async function main() {
     throw new Error("The deployer has no native USDC for Arc gas fees.");
   }
 
-  console.log(`Deploying the non-lending USDC custody vault on Arc (chain ${chain.chainId}).`);
   const Vault = await ethers.getContractFactory("ArcUsdcVault", deployer);
-  const vault = await Vault.deploy(ARC_USDC_ADDRESS);
+  const deploymentTransaction = Vault.getDeployTransaction(ARC_USDC_ADDRESS);
+  const estimatedGas = await deployer.estimateGas(deploymentTransaction);
+  const gasLimit = estimatedGas.mul(120).add(99).div(100);
+  const feeData = await deployer.provider.getFeeData();
+  const feeOptions = feeData.maxFeePerGas
+    ? {
+        maxFeePerGas: feeData.maxFeePerGas,
+        maxPriorityFeePerGas: feeData.maxPriorityFeePerGas || ethers.constants.Zero,
+      }
+    : feeData.gasPrice
+      ? { gasPrice: feeData.gasPrice }
+      : null;
+  if (!feeOptions) {
+    throw new Error("The Arc RPC did not provide a usable gas price.");
+  }
+
+  const feePerGas = feeOptions.maxFeePerGas || feeOptions.gasPrice;
+  const maximumFee = gasLimit.mul(feePerGas);
+  if (nativeUsdcBalance.lt(maximumFee)) {
+    throw new Error(
+      `Insufficient native USDC for the estimated deployment fee: ` +
+      `${ethers.utils.formatUnits(nativeUsdcBalance, ARC_MAINNET.nativeCurrency.decimals)} available, ` +
+      `${ethers.utils.formatUnits(maximumFee, ARC_MAINNET.nativeCurrency.decimals)} required at the buffered gas limit.`,
+    );
+  }
+
+  console.log("Arc deployment preflight passed.");
+  console.log(`Target: ArcUsdcVault on Arc Mainnet (chain ${chain.chainId})`);
+  console.log(`Deployer: ${deployer.address}`);
+  console.log(`USDC constructor argument: ${ethers.utils.getAddress(ARC_USDC_ADDRESS)}`);
+  console.log(`Estimated gas: ${estimatedGas.toString()} (transaction limit: ${gasLimit.toString()})`);
+  console.log(`Gas price: ${ethers.utils.formatUnits(feePerGas, "gwei")} gwei`);
+  console.log(`Maximum estimated fee: ${ethers.utils.formatUnits(maximumFee, ARC_MAINNET.nativeCurrency.decimals)} native USDC`);
+  console.log(`Available native USDC: ${ethers.utils.formatUnits(nativeUsdcBalance, ARC_MAINNET.nativeCurrency.decimals)}`);
+  console.log("Submitting the ArcUsdcVault deployment transaction.");
+
+  const vault = await Vault.deploy(ARC_USDC_ADDRESS, { ...feeOptions, gasLimit });
   const receipt = await vault.deployTransaction.wait();
+  if (receipt.status !== 1) {
+    throw new Error(`Deployment transaction ${receipt.transactionHash} was mined but failed.`);
+  }
+
+  const deployedCode = await deployer.provider.getCode(vault.address);
+  if (deployedCode === "0x") {
+    throw new Error(`No contract code was found at the deployed vault address ${vault.address}.`);
+  }
+  const deployedToken = await vault.token();
+  if (ethers.utils.getAddress(deployedToken) !== ethers.utils.getAddress(ARC_USDC_ADDRESS)) {
+    throw new Error(`The deployed vault at ${vault.address} has an unexpected token address.`);
+  }
 
   const deployment = {
     network: "Arc Mainnet",
