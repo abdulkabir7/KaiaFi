@@ -1,64 +1,122 @@
-# KaiaFi
+# KaiaFi — USDC Finance on Arc
 
-KaiaFi is an early-stage USDC finance application targeting Arc Mainnet. Its original dashboard and lending-oriented navigation are preserved. The initial Arc integration is a simple user-owned USDC custody vault; it does not lend funds or pay yield.
+**KaiaFi is building a simpler way to access USDC-powered financial services on Arc.** The project starts with a live, on-chain USDC vault and is designed to evolve toward transparent, non-custodial lending, borrowing, and risk-aware capital management.
 
-## Features
+The goal is simple: make on-chain finance easier to understand and use, while keeping balances and transactions verifiable on-chain.
 
-- Dashboard with live wallet and configured-vault balances.
-- USDC deposit and withdrawal into a simple custody vault that tracks each user's balance and only allows withdrawals by that depositor.
-- Borrowing screen retained and clearly marked unavailable.
-- Markets, portfolio, and activity screens with live values only where the implementation supports them.
-- Arc Mainnet wallet connection and network switching.
-- Explorer links for confirmed deposit and withdrawal transactions.
+**Live on Arc Mainnet:** USDC deposit and withdrawal vault
 
-The vault is a custody proof of concept, not a lending market. Borrowing, collateral, liquidation, lending rates, and lending-market liquidity are unavailable. No lending contract is deployed by this repository's deployment command.
+**Network:** Arc Mainnet
 
-## Arc Mainnet
+**Contract:** `0xC60013cD0edfE8452C12Bdf7EdFbf42824DeeA91`
 
-Configuration is centralized in `config/arc-mainnet.json`, imported by the frontend and Hardhat, and checked by the Arc deployment script.
+**Deployment transaction:** [View on Arc Explorer](https://explorer.arc.io/tx/0x4dc0b989ba890c16f4671a43f909dd23238ecbbf539c05c5ba6810459f35f097)
 
-| Setting | Value |
-| --- | --- |
-| Chain ID | `5042` |
-| RPC | `https://rpc.mainnet.arc.io` |
-| Explorer | [explorer.arc.io](https://explorer.arc.io) |
-| Native gas asset | USDC (18 decimals) |
-| ERC-20 USDC interface | [`0x3600000000000000000000000000000000000000`](https://explorer.arc.io/address/0x3600000000000000000000000000000000000000), 6 decimals |
+## The Problem
 
-Native USDC for gas and the ERC-20 USDC interface are two interfaces to the same balance; the frontend reads token balances using the ERC-20 interface and its 6 decimals. Values are based on the [official Arc wallet configuration](https://docs.arc.io/arc/references/connect-to-arc) and [contract address list](https://docs.arc.io/arc/references/contract-addresses).
+DeFi can be difficult to navigate, especially for people who simply want to understand their assets and interact with financial applications without wrestling with complicated interfaces.
 
-## Architecture
+At the same time, building useful on-chain financial products requires more than a polished dashboard. The underlying transactions, accounting, and risk controls must be transparent and reliable.
 
-- React 18, TypeScript, Vite, and Tailwind CSS.
-- Ethers.js v5 with the injected wallet provider.
-- Solidity 0.8.20 and Hardhat.
-- `ArcUsdcVault.sol`: permissionless deployment, fixed to a six-decimal ERC-20; records deposits per account, and lets each account withdraw its own balance.
-- `LendingPool.sol`, `Liquidation.sol`, `InterestRateModel.sol`: retained research prototypes, not used by the frontend and not included in the Arc deployment script.
-- Circle's Borrow Kit is not integrated; no supported collateral market or Borrow Kit transaction flow is configured in this app.
+KaiaFi approaches this challenge incrementally: start with a working Arc-native financial primitive, establish the foundation for a better user experience, and expand toward more advanced financial functionality as the necessary protocol integrations and security controls are implemented.
 
-## Setup
+## What KaiaFi Does Today
 
-Requirements: Node.js 20.19 or later (or 22.12 or later) and npm.
+- **On-chain USDC vault:** Users can deposit USDC into a deployed smart contract and withdraw their own recorded balances.
+- **User-level accounting:** The vault tracks balances by depositing address.
+- **Arc Mainnet integration:** Connect an injected wallet and interact with the application on Arc.
+- **Transaction transparency:** Confirmed transactions can be inspected through Arc Explorer.
+- **Finance-focused interface:** A unified dashboard with Overview, Lending, Borrowing, Markets, Portfolio, and Activity screens.
+
+The lending and borrowing screens are part of the product's direction, but those financial services are not currently enabled. The deployed vault does not generate yield or provide credit.
+
+## Why Arc?
+
+Arc provides the settlement layer for KaiaFi's current on-chain vault and the foundation for future USDC financial services.
+
+Rather than treating blockchain as a backend detail, KaiaFi uses Arc for the operations that matter: deploying the vault, recording deposits, enforcing withdrawal balances, and making transactions independently verifiable.
+
+The current deployment uses Arc Mainnet and the documented USDC ERC-20 interface.
+
+- Network: Arc Mainnet
+- Chain ID: `5042`
+- RPC: `https://rpc.mainnet.arc.io`
+- Explorer: [explorer.arc.io](https://explorer.arc.io/)
+- USDC interface: `0x3600000000000000000000000000000000000000`
+
+## Roadmap
+
+KaiaFi is being developed in stages, with each stage building on a verifiable foundation.
+
+### Phase 1 — Arc-native foundation
+
+- Deploy and verify the USDC vault on Arc Mainnet.
+- Support user-specific deposit and withdrawal accounting.
+- Connect the interface to wallet balances and on-chain transactions.
+- Establish a reproducible development, testing, and deployment workflow.
+
+### Phase 2 — Better financial visibility
+
+- Add reliable, event-derived transaction history.
+- Improve portfolio and position tracking.
+- Introduce transparent market data from verifiable sources.
+- Improve transaction feedback, error handling, and wallet recovery flows.
+
+### Phase 3 — Risk-aware lending and borrowing
+
+- Evaluate suitable Arc-compatible lending infrastructure and collateral markets.
+- Integrate a borrowing protocol only after validating its contracts, supported assets, and deployment requirements.
+- Implement reliable collateral valuation, health-factor calculations, and liquidation safeguards.
+- Make borrowing costs, collateral requirements, and position risks understandable before users transact.
+
+### Phase 4 — Smarter capital management
+
+- Explore portfolio insights and risk notifications based on verified user and market data.
+- Investigate capital-allocation recommendations with transparent assumptions.
+- Add automation only where its behavior, permissions, and risks can be clearly explained.
+
+These are planned development stages, not claims that the features are already live. The roadmap will evolve based on testing, security requirements, and the Arc ecosystem.
+
+## Technical Architecture
+
+- **Frontend:** React 18, TypeScript, Vite, and Tailwind CSS.
+- **Wallet and blockchain interaction:** Ethers.js v5.
+- **Smart contracts:** Solidity 0.8.20 and Hardhat.
+- **Current on-chain component:** `ArcUsdcVault.sol`.
+- **Network:** Arc Mainnet.
+
+The repository also contains earlier lending research prototypes. They are not part of the live vault flow or the current deployment script.
+
+## Deployed Contract
+
+The current vault is deployed at:
+
+`0xC60013cD0edfE8452C12Bdf7EdFbf42824DeeA91`
+
+[Inspect the deployment transaction](https://explorer.arc.io/tx/0x4dc0b989ba890c16f4671a43f909dd23238ecbbf539c05c5ba6810459f35f097).
+
+The vault records deposits per account and permits each account to withdraw against its own recorded balance. It does not implement lending, borrowing, interest, collateral valuation, or liquidation.
+
+## Getting Started
+
+Requirements: Node.js 20.19 or later, or Node.js 22.12 or later, and npm.
 
 ```bash
+git clone https://github.com/abdulkabir7/KaiaFi.git
+cd KaiaFi
 npm install
 npm run dev
 ```
 
-## Environment variables
+To configure the deployed vault for the frontend, set:
 
-Copy `.env.example` to `.env` for local deployment configuration. Keep `.env` private and out of Git.
+```env
+VITE_ARC_USDC_VAULT_ADDRESS=0xC60013cD0edfE8452C12Bdf7EdFbf42824DeeA91
+```
 
-| Variable | Used by | Purpose |
-| --- | --- | --- |
-| `ARC_RPC_URL` | Hardhat deployment | Arc Mainnet RPC endpoint. Required; no network fallback is used during deployment. |
-| `PRIVATE_KEY` | Hardhat deployment | Private key for the deploying account. Keep local; never add it to Vercel or a `VITE_` variable. |
-| `ARC_USDC_ADDRESS` | Hardhat deployment | Must match the official Arc USDC ERC-20 interface; script checks bytecode and 6 decimals. |
-| `VITE_ARC_USDC_VAULT_ADDRESS` | Frontend build/runtime | Public address of the deployed `ArcUsdcVault`. Set as a Vercel environment variable after deployment. |
+For local deployment work, copy `.env.example` to `.env` and configure the deployment variables. Never commit private keys or local secrets.
 
-The frontend can be built without a vault address. In that state it preserves the screens but disables deposit/withdraw actions and displays an explicit not-deployed state.
-
-## Build and tests
+## Development Commands
 
 ```bash
 npm run build
@@ -67,40 +125,16 @@ npm run compile
 npm test
 ```
 
-The Arc vault tests use a local mock token only. Mock USDT/KAI/KRW contracts are not real Arc assets and are not used in the Arc deployment.
+The vault tests use a local mock token. Passing local tests does not replace an independent security audit.
 
-## Arc deployment
+## Security and Scope
 
-Review `.env.example`, copy it to `.env`, and fill in the RPC endpoint, Arc mainnet deployer private key, and the official USDC address. Then run:
+KaiaFi is an early-stage project. The deployed vault has not undergone an independent security audit. Smart contracts and blockchain transactions carry risk, and token issuer restrictions can affect transfers.
 
-```bash
-npm run deploy:arc
-```
+The live product is deliberately limited to deposit and withdrawal functionality. Lending, borrowing, yield generation, and liquidation will require additional protocol integrations, risk controls, and testing before they can be offered.
 
-The script refuses to run unless `ARC_RPC_URL`, `PRIVATE_KEY`, and `ARC_USDC_ADDRESS` are valid, the selected network is Arc Mainnet (chain ID 5042), the USDC address is the documented Arc address with deployed code, and `decimals()` returns 6. Before submitting a transaction, it prints the deployer, vault target, constructor token address, estimated gas, buffered gas limit, estimated fee, and available native USDC, and stops if the balance cannot cover the estimate. It deploys **only `ArcUsdcVault`** and writes the actual vault address, transaction hash, and block number to the ignored local `deployment.json`. It does not deploy the prototype lending contracts.
+## Built for the Next Stage of On-chain Finance
 
-The Arc USDC custody vault is deployed and verified:
+KaiaFi starts with a real contract on Arc and a focused proof of concept. The next step is to build on that foundation toward financial tools that are more accessible, transparent, and risk-aware.
 
-| Setting | Value |
-| --- | --- |
-| Vault | [`0xC60013cD0edfE8452C12Bdf7EdFbf42824DeeA91`](https://explorer.arc.io/address/0xC60013cD0edfE8452C12Bdf7EdFbf42824DeeA91) |
-| Deployment transaction | [`0x4dc0b989ba890c16f4671a43f909dd23238ecbbf539c05c5ba6810459f35f097`](https://explorer.arc.io/tx/0x4dc0b989ba890c16f4671a43f909dd23238ecbbf539c05c5ba6810459f35f097) |
-| Deployer | `0x42562D5Eadb7EFEd4997C580eA60f2D2f7D58018` |
-| Block | `25927877` |
-
-The deploy script verified a successful receipt, runtime code at the vault address, and the configured Arc USDC token address. The ignored local `deployment.json` contains the deployment metadata. For a Vercel frontend build, set `VITE_ARC_USDC_VAULT_ADDRESS` to the vault address above. Vercel deployment is managed separately by the project owner; no live frontend URL is claimed.
-
-## Security and limitations
-
-- `ArcUsdcVault` is intentionally limited to per-account USDC deposit and withdrawal. It has no lending, borrowing, yield, collateral valuation, oracle, liquidation, or admin withdrawal function.
-- Deposited USDC remains in the vault contract until the recorded depositor withdraws. ERC-20 USDC issuer controls such as address freezes may affect transfers.
-- The vault and prototype contracts have not been audited. Do not treat this project as production-ready or deposit funds beyond what you can afford to risk.
-- The old lending prototype is unsafe: its health factor and market data were hard-coded, its borrowing limit had no reliable price valuation, per-user interest accounting was incomplete, and liquidation did not verify/settle the position.
-- The activity list is session-only. The Arc Explorer is the canonical transaction record.
-
-## Deployment status
-
-- Arc lending/borrowing market: not deployed.
-- `ArcUsdcVault`: deployed on Arc Mainnet at [`0xC60013cD0edfE8452C12Bdf7EdFbf42824DeeA91`](https://explorer.arc.io/address/0xC60013cD0edfE8452C12Bdf7EdFbf42824DeeA91).
-- Frontend: not deployed by this repository change.
-- License: no license is specified in the repository.
+**Build on Arc. Make finance easier to use. Keep the transactions verifiable.**
